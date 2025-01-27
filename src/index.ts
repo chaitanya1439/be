@@ -19,7 +19,7 @@ const groq = new Groq({
 
 
 // Route for template
-app.post("/template", async (req: Request, res: Response) => {
+app.post("/api/template", async (req: Request, res: Response) => {
  
     const { prompt } = req.body;
 
@@ -59,7 +59,7 @@ app.post("/template", async (req: Request, res: Response) => {
   });
 
 // Route for chat
-app.post("/chat", async (req: Request, res: Response) => {
+app.post("/api/chat", async (req: Request, res: Response) => {
     const { messages } = req.body;
 
     const completion = await groq.chat.completions.create({
@@ -85,9 +85,11 @@ app.post("/chat", async (req: Request, res: Response) => {
   });
 
 
-
+  app.get('/', (_req: Request, res: Response) => {
+    res.send({ message: 'Hello API' });
+  });
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
