@@ -86,7 +86,7 @@ app.post("/api/chat", async (req: Request, res: Response) => {
 
 
   app.get('/', (_req: Request, res: Response) => {
-    res.send({ message: 'Hello API' });
+    res.status(200).json('Hello APIS');
   });
 // Start the server
 const PORT = process.env.PORT || 3001;
