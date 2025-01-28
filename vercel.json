@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "buildCommand": "npm run build",
+    "buildCommand": "tsc -b",
     "outputDirectory": "dist",
     "builds": [
       {
@@ -11,7 +11,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "dist/$1"
+        "dest": "src/index.ts"
       }
     ]
   }
