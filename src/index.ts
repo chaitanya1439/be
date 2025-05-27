@@ -13,7 +13,7 @@ app.use(express.json())
 
 // Initialize the Groq client with your API key
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 
