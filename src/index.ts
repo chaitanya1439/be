@@ -1,6 +1,6 @@
 require("dotenv").config();
 import { Request, Response } from "express";
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import cors from "cors";
 import { BASE_PROMPT, getSystemPrompt } from "./prompts";
 import { basePrompt as nodeBasePrompt } from "./defaults/node";
@@ -11,11 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json())
 
-// Initialize the Groq client with your API key
-const groq = new Groq({
-  apiKey: "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",
-});
-
+// Initialize Gemini client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY! || "AIzaSyAr6Qcx3fYdppmn9D7TK6ZK7rPcUKYyLiI");
 
 
 // Route for template
@@ -23,21 +20,13 @@ app.post("/api/template", async (req: Request, res: Response) => {
  
     const { prompt } = req.body;
 
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "Return either node or react based on what you think this project should be. Only return a single word either 'node' or 'react'. Do not return anything extra.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ], max_tokens: 1000,
-      model: "llama-3.3-70b-versatile",
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent({
+      contents: [
+        { role: "user", parts: [{ text: prompt }] }
+      ]
     });
-
-    const answer = completion.choices[0]?.message?.content?.trim();
+    const answer = result.response.text();
 
     if (!answer) {
       return res.status(400).json({ message: "Invalid response from Groq" });
@@ -60,20 +49,16 @@ app.post("/api/template", async (req: Request, res: Response) => {
 
 // Route for chat
 app.post("/api/chat", async (req: Request, res: Response) => {
-    const { messages } = req.body;
+    const messages: { role: string; content: string }[] = req.body.messages;
 
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: getSystemPrompt(),
-        },
-        ...messages,
-      ], max_tokens: 1000,
-      model: "llama-3.3-70b-versatile",
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent({
+      contents: [
+        { role: "user", parts: [{ text: getSystemPrompt() }] },
+        ...messages.map(msg => ({ role: msg.role, parts: [{ text: msg.content }] }))
+      ]
     });
-
-    const responseText = completion.choices[0]?.message?.content;
+    const responseText = result.response.text();
 
     if (!responseText) {
       return res.status(400).json({ message: "Invalid response from Groq" });
