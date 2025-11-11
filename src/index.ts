@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json())
 
 // Initialize Gemini client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY! || "AIzaSyAr6Qcx3fYdppmn9D7TK6ZK7rPcUKYyLiI");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY! || "AIzaSyDsi8_-FrjE6aMDhie-79cD6VSlVcQpF4k");
 
 
 // Route for template
